@@ -53,7 +53,7 @@ export const sampleCandidates: Analysis[] = [
 ];
 
 export function buildAnalysis(fileName: string, jobDescription: string): Analysis {
-  const base = sampleCandidates[0];
+  const base = sampleCandidates[0]!;
   const name = fileName
     .replace(/\.pdf$/i, "")
     .replace(/[_-]+/g, " ")
