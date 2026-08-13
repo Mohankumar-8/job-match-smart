@@ -1,12 +1,25 @@
 import { useState } from "react";
-import { Menu, ScanSearch, X } from "lucide-react";
+import { Menu, Mic, ScanSearch, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const nav = ["Dashboard", "Resume Screening", "Candidates", "Results", "Settings"];
 
-export function SiteHeader() {
+type Props = {
+  onVoiceClick: () => void;
+  listening: boolean;
+  onNavigate?: (item: string) => void;
+  activeItem?: string;
+};
+
+export function SiteHeader({ onVoiceClick, listening, onNavigate, activeItem }: Props) {
   const [active, setActive] = useState("Resume Screening");
   const [open, setOpen] = useState(false);
+  const current = activeItem ?? active;
+
+  const select = (item: string) => {
+    setActive(item);
+    onNavigate?.(item);
+  };
 
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur">
@@ -24,10 +37,10 @@ export function SiteHeader() {
           {nav.map((item) => (
             <button
               key={item}
-              onClick={() => setActive(item)}
-              aria-current={active === item ? "page" : undefined}
+              onClick={() => select(item)}
+              aria-current={current === item ? "page" : undefined}
               className={`focus-ring rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-                active === item
+                current === item
                   ? "bg-secondary text-foreground"
                   : "text-muted-foreground hover:bg-secondary/70 hover:text-foreground"
               }`}
@@ -35,18 +48,43 @@ export function SiteHeader() {
               {item}
             </button>
           ))}
+          <Button
+            variant={listening ? "destructive" : "outline"}
+            onClick={onVoiceClick}
+            aria-label="Open voice assistant"
+            className="focus-ring relative ml-2"
+          >
+            {listening && (
+              <span className="absolute -inset-0.5 animate-ping rounded-md bg-destructive/25" />
+            )}
+            <Mic className="relative h-4 w-4" aria-hidden="true" />
+            <span className="relative">{listening ? "Listening…" : "Voice"}</span>
+          </Button>
         </nav>
 
-        <Button
-          variant="outline"
-          size="icon"
-          className="lg:hidden"
-          aria-expanded={open}
-          aria-label={open ? "Close navigation" : "Open navigation"}
-          onClick={() => setOpen((v) => !v)}
-        >
-          {open ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-        </Button>
+        <div className="flex items-center gap-2 lg:hidden">
+          <Button
+            variant={listening ? "destructive" : "outline"}
+            size="icon"
+            aria-label="Open voice assistant"
+            onClick={onVoiceClick}
+            className="focus-ring relative"
+          >
+            {listening && (
+              <span className="absolute -inset-0.5 animate-ping rounded-md bg-destructive/25" />
+            )}
+            <Mic className="relative h-4 w-4" aria-hidden="true" />
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            aria-expanded={open}
+            aria-label={open ? "Close navigation" : "Open navigation"}
+            onClick={() => setOpen((v) => !v)}
+          >
+            {open ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+          </Button>
+        </div>
       </div>
 
       {open && (
@@ -55,11 +93,11 @@ export function SiteHeader() {
             <button
               key={item}
               onClick={() => {
-                setActive(item);
+                select(item);
                 setOpen(false);
               }}
               className={`focus-ring block w-full rounded-lg px-3 py-2 text-left text-sm font-medium ${
-                active === item ? "bg-secondary text-foreground" : "text-muted-foreground"
+                current === item ? "bg-secondary text-foreground" : "text-muted-foreground"
               }`}
             >
               {item}

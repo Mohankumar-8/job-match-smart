@@ -6,11 +6,15 @@ type Props = {
   file: File | null;
   onFile: (file: File | null) => void;
   error?: string | null;
+  /** Lets parents (e.g. the voice assistant) open the file dialog. */
+  openRef?: React.MutableRefObject<(() => void) | null>;
 };
 
-export function UploadPanel({ file, onFile, error }: Props) {
+export function UploadPanel({ file, onFile, error, openRef }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
+
+  if (openRef) openRef.current = () => inputRef.current?.click();
 
   const handleFiles = (list: FileList | null) => {
     const f = list?.[0];
