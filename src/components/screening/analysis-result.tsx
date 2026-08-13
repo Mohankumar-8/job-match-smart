@@ -51,7 +51,17 @@ function MatchRow({
   );
 }
 
-export function AnalysisResult({ data }: { data: Analysis }) {
+export function AnalysisResult({
+  data,
+  highlight,
+}: {
+  data: Analysis;
+  highlight?: "matched" | "missing" | null;
+}) {
+  const ring = (on: boolean) =>
+    on
+      ? "rounded-xl ring-2 ring-primary ring-offset-2 ring-offset-card transition-shadow duration-300 p-3 -m-3"
+      : "transition-shadow duration-300";
   return (
     <div className="card-surface animate-in fade-in slide-in-from-bottom-2 duration-500 p-5 sm:p-7">
       <div className="grid gap-6 md:grid-cols-[auto_minmax(0,1fr)] md:items-center">
@@ -87,7 +97,7 @@ export function AnalysisResult({ data }: { data: Analysis }) {
       </div>
 
       <div className="mt-6 grid gap-6 sm:grid-cols-2">
-        <section>
+        <section className={ring(highlight === "matched")}>
           <h3 className="text-sm font-semibold">Matched skills ({data.matchedSkills.length})</h3>
           <div className="mt-3 flex flex-wrap gap-2">
             {data.matchedSkills.map((s) => (
@@ -95,7 +105,7 @@ export function AnalysisResult({ data }: { data: Analysis }) {
             ))}
           </div>
         </section>
-        <section>
+        <section className={ring(highlight === "missing")}>
           <h3 className="text-sm font-semibold">Missing skills ({data.missingSkills.length})</h3>
           <div className="mt-3 flex flex-wrap gap-2">
             {data.missingSkills.map((s) => (
